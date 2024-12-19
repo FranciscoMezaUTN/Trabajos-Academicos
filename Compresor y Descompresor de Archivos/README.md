@@ -16,41 +16,41 @@ Este trabajo implementa un compresor y descompresor de archivos de texto e imág
 
 │   ├── biblioteca/
 
-│       ├── funciones/
+│   |   ├── funciones/
 
-│       │   ├── arrays.hpp:   Manejo de arreglos
+│   |   │   ├── arrays.hpp:   Manejo de arreglos
 
-│       │   ├── files.hpp:    Operaciones sobre archivos
+│   |   │   ├── files.hpp:    Operaciones sobre archivos
 
-│       │   ├── lists.hpp:    Manipulación de listas
+│   |   │   ├── lists.hpp:    Manipulación de listas
 
-│       │   ├── strings.hpp:  Procesamiento de cadenas de texto
+│   |   │   ├── strings.hpp:  Procesamiento de cadenas de texto
 
-│       │   ├── tokens.hpp:   Manejo de tokens en cadenas
+│   |   │   ├── tokens.hpp:   Manejo de tokens en cadenas
 
-│       ├── tads/
+│   |   ├── tads/
 
-│       |   ├── Array.hpp:    Implementación de arreglos
+│   |   |   ├── Array.hpp:    Implementación de arreglos
 
-│       |   ├── Coll.hpp:     Implementación de colecciones
+│   |   |   ├── Coll.hpp:     Implementación de colecciones
 
-│       |   ├── List.hpp:     Implementación de listas
+│   |   |   ├── List.hpp:     Implementación de listas
 
-│       |   ├── Map.hpp:      Implementación de mapas
+│   |   |   ├── Map.hpp:      Implementación de mapas
 
-│       |   ├── Queue.hpp:    Implementación de colas
+│   |   |   ├── Queue.hpp:    Implementación de colas
 
-│       |   ├── Stack.hpp:    Implementación de pilas
+│   |   |   ├── Stack.hpp:    Implementación de pilas
 
-│       |   ├── huffman/
+│   |   |   ├── huffman/
 
-│           |   ├── BitReader.hpp:     Lectura de datos a nivel de bits
+│   |   |   |   ├── BitReader.hpp:     Lectura de datos a nivel de bits
 
-│           |   ├── BitWriter.hpp:     Escritura de datos a nivel de bits
+│   |   |   |   ├── BitWriter.hpp:     Escritura de datos a nivel de bits
 
-│           |   ├── HuffmanSetup.hpp:  Configuración del algoritmo de Huffman
+│   |   |   |   ├── HuffmanSetup.hpp:  Configuración del algoritmo de Huffman
 
-│           |   ├── Progress.hpp:      Seguimiento del progreso en las operaciones
+│   |   |   |   ├── Progress.hpp:      Seguimiento del progreso en las operaciones
 
 ├── example.bmp:              Archivo de ejemplo para probar el programa
 
