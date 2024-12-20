@@ -1,0 +1,53 @@
+import modelo.*
+
+describe "TP Integrador TEST 2"{
+	const imperioSinDeuda = new Imperio(pepines = 1000000, ciudades = [])
+	const imperioEndeudado = new Imperio(pepines = -300000, ciudades = [])
+	const edificioCultural = new EdificioCultural(cultura = 15, costoDeConstruccionBase = 1000)
+	const edificioMilitar = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+	const ciudadFeliz = new Ciudad(imperio = imperioSinDeuda, edificios = [edificioCultural], habitantes = 100000, tanques = 1, sistemaImpositivo = apaciguador)
+	const ciudadInfeliz = new Ciudad(imperio = imperioSinDeuda, edificios = [edificioMilitar], habitantes = 100000, tanques = 1, sistemaImpositivo = apaciguador)
+	const ciudadEndeudada = new Ciudad(imperio = imperioEndeudado, edificios = [edificioCultural], habitantes = 100000, tanques = 1, sistemaImpositivo = new Citadino(cantHabitantesIncremento = 10000))
+	
+	test "El costo de construccion de un edificio para una ciudad con 100000 habitantes y con sistema impositivo Citadino de incremento cada 10000 habitantes resulta en un 50% mas que el costo base"{
+		const edificio = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+		const ciudad = new Ciudad(imperio = imperioSinDeuda, edificios = [edificio], habitantes = 100000, tanques = 1, sistemaImpositivo = new Citadino(cantHabitantesIncremento = 10000))
+		assert.equals(10000 * 1.5, ciudad.costoDeConstruccion(edificio))
+	}
+	test "El costo de construccion de un edificio militar para una ciudad con sistema impositivo Incentivo Cultural resulta igual al costo base"{
+		const edificio = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+		const ciudad = new Ciudad(imperio = imperioSinDeuda, edificios = [edificio], habitantes = 100000, tanques = 1, sistemaImpositivo = incentivoCultural)
+		assert.equals(10000, ciudad.costoDeConstruccion(edificio))
+	}
+	test "El costo de construccion de un edificio cultural que genera 3000 de cultura para una ciudad con sistema impositivo Incentivo Cultural resulta igual al costo base menos 1000"{
+		const edificio = new EdificioCultural(cultura = 3000, costoDeConstruccionBase = 10000)
+		const ciudad = new Ciudad(imperio = imperioSinDeuda, edificios = [edificio], habitantes = 100000, tanques = 1, sistemaImpositivo = incentivoCultural)
+		assert.equals(10000 - 1000, ciudad.costoDeConstruccion(edificio))
+	}
+	test "El costo de construccion de un edificio para una Ciudad Feliz con sistema impositivo apaciguador resulta igual al costo base"{
+		const edificio = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+		assert.equals(10000, ciudadFeliz.costoDeConstruccion(edificio))
+	}
+	test "El costo de construccion de un edificio para una Ciudad Infeliz con sistema impositivo apaciguador resulta igual al costo base menos la tranquilidad ue genera el edificio"{
+		const edificio = new EdificioEconomico(esCapital=0, costoDeConstruccionBase = 10000, pepinesGenerados = 10000)
+		assert.equals(10000 - 3, ciudadInfeliz.costoDeConstruccion(edificio))
+	}
+	
+	test "Una ciudad endeudada no puede construir un edificio"{
+		assert.throwsException({ciudadEndeudada.construirEdificio(edificioMilitar)})
+	}
+	test "Si una ciudad construye un edificio debe reducirse el coste de los pepines del imperio"{
+		const imperio = new Imperio(pepines = 100000, ciudades = [])
+		const edificio = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+		const ciudad = new Ciudad(imperio = imperio, edificios = [edificio], habitantes = 100000, tanques = 1, sistemaImpositivo = incentivoCultural)
+		ciudad.construirEdificio(edificio)
+		assert.equals(90000, imperio.pepines())
+	}
+	test "Si una ciudad construye un edificio debe agregarse el edificio al resto de sus edificios"{
+		const imperio = new Imperio(pepines = 100000, ciudades = [])
+		const edificio = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+		const ciudad = new Ciudad(imperio = imperio, edificios = [], habitantes = 100000, tanques = 1, sistemaImpositivo = incentivoCultural)
+		ciudad.construirEdificio(edificio)
+		assert.equals([edificio], ciudad.edificios())
+	}
+}

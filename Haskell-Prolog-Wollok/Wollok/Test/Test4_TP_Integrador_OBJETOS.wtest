@@ -1,0 +1,81 @@
+import modelo.*
+
+describe "TP integrador TEST 1" {	
+	
+	test "La disconformidad de los habitantes de las ciudades capitales es la mitad de las otras ciudades" {
+		const imperio = new Imperio(pepines = 100000, ciudades = [])
+  		const edificio = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+  		const capital = new Capital(imperio = imperio, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		const ciudad = new Ciudad(imperio = imperio, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		assert.equals(capital.disconformidad(), ciudad.disconformidad()/2)
+	}
+	
+	test "El costo de construcción de los edificios es un 10% más alto que lo normal"{
+		const imperio = new Imperio(pepines = 100000, ciudades = [])
+  		const edificio = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+  		const capital = new Capital(imperio = imperio, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		const ciudad = new Ciudad(imperio = imperio, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		assert.equals(capital.costoDeConstruccion(edificio), ciudad.costoDeConstruccion(edificio)*1.1)
+	}
+	
+	test "recaudar pepines para el imperio se triplica el dinero generado en estas ciudades"{
+		const imperioCap = new Imperio(pepines = 101, ciudades = [capital])
+  		const edificio = new EdificioEconomico(esCapital=1, costoDeConstruccionBase = 100, pepinesGenerados = 10)
+  		const capital = new Capital(imperio = imperioCap, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		capital.evolucionar()
+  		assert.equals(129.9,imperioCap.pepines())
+  	}
+  	
+  	test "Si la ciudad no es feliz, debe configurarse un sistema apaciguador"{
+		const imperioCap = new Imperio(pepines = -10000000, ciudades = [capital])
+  		const edificio = new EdificioEconomico(esCapital=1, costoDeConstruccionBase = 100, pepinesGenerados = 10)
+  		const capital = new Capital(imperio = imperioCap, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		capital.evolucionar()
+  		assert.equals(106.7, capital.costoDeConstruccion(edificio))
+  	}
+  	
+  	test "Entre las 3 ciudades felices del imperio que menos cultura total tienen, debe configurarse un sistema de incentivo cultural"{
+		const imperioCap = new Imperio(pepines = 10000000, ciudades = [capital1,capital2,capital3])
+  		const edificio = new EdificioEconomico(cultura=3,esCapital=1, costoDeConstruccionBase = 100, pepinesGenerados = 10)
+  		const capital1 = new Capital(imperio = imperioCap, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		const capital2 = new Capital(imperio = imperioCap, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		const capital3 = new Capital(imperio = imperioCap, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		capital1.evolucionar()
+  		assert.equals((edificio.costoDeConstruccionBase()-edificio.cultura().div(3)), capital1.costoDeConstruccion(edificio))
+  	}
+  	/*
+  	test "Siguiente test"{
+		const imperioCap = new Imperio(pepines = -10000000, ciudades = [capital])
+  		const edificio = new EdificioEconomico(esCapital=1, costoDeConstruccionBase = 100, pepinesGenerados = 10)
+  		const capital = new Capital(imperio = imperioCap, edificios = [edificio], habitantes = 100000, tanques = 2, sistemaImpositivo = incentivoCultural)
+  		capital.evolucionar()
+  		assert.equals(106.7, capital.costoDeConstruccion(edificio))
+  	}*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

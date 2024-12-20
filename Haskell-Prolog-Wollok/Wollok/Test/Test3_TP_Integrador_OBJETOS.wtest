@@ -1,0 +1,38 @@
+import modelo.*
+
+//Tests Punto 3
+describe "TP Integrador TEST 3"{
+	
+	const ciudadEconomica = new Ciudad(imperio = imperioGrande, edificios = [edificioEconomico], habitantes = 100000, tanques = 1, sistemaImpositivo = apaciguador)
+    const ciudadFeliz2 = new Ciudad(imperio = imperioGrande, edificios = [edificioCultural], habitantes = 100000, tanques = 2, sistemaImpositivo = apaciguador)
+    const ciudadInfeliz2 = new Ciudad(imperio = imperioGrande, edificios = [edificioMilitar], habitantes = 100000, tanques = 2, sistemaImpositivo = apaciguador)
+    
+	const edificioCultural = new EdificioCultural(cultura = 15, costoDeConstruccionBase = 1000)
+    const edificioMilitar = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+    const edificioEconomico = new EdificioEconomico(esCapital=0,costoDeConstruccionBase = 600000, pepinesGenerados = 5000)
+	
+    
+
+    test "Al evolucionar un imperio, sus ciudads felices incrementan su población en un 2%"{
+    	const imperioGrande = new Imperio(pepines = 1000000, ciudades = [ciudadEconomica, ciudadFeliz2, ciudadInfeliz2])
+        const poblacionAntes = ciudadFeliz2.habitantes()
+        imperioGrande.evolucionar()
+        assert.that(poblacionAntes < ciudadFeliz2.habitantes())
+        //assert.that(ciudadFeliz2.habitantes() == 102000)
+    }
+/*    test "Al evolucionar un imperio, sus ciudades no felices no incrementan su población en un 2%"{
+        const poblacionAntes = ciudadInfeliz2.habitantes()
+        imperioGrande.evolucionar()
+        assert.that(poblacionAntes == ciudadInfeliz2.habitantes())
+    }
+    test "Al evolucionar un imperio, este paga el mantenimiento de los edificios de sus ciudades y recauda pepines generados por los edificios económicos"{
+        imperioGrande.evolucionar()
+        assert.equals(998890.03, imperioGrande.pepines())
+    }
+    test "Al evolucionar un imperio, se añaden a sus ciudades con edificios militares la cantidad de tanques que cada uno genera"{
+        const tanquesAntes = ciudadInfeliz2.tanques()
+        imperioGrande.evolucionar()
+        assert.that(tanquesAntes < ciudadInfeliz2.tanques())
+    }
+ */   
+}

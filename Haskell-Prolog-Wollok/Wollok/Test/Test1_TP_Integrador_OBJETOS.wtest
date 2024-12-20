@@ -1,0 +1,22 @@
+import modelo.*
+
+describe "TP integrador TEST 1" {	
+	const imperioSinDeuda = new Imperio(pepines = 1000000, ciudades = [])
+	const imperioEndeudado = new Imperio(pepines = -300000, ciudades = [])
+	const edificioCultural = new EdificioCultural(cultura = 15, costoDeConstruccionBase = 1000)
+	const edificioMilitar = new EdificioMilitar(costoDeConstruccionBase = 10000, tanquesGenerados = 1)
+	const ciudadFeliz = new Ciudad(imperio = imperioSinDeuda, edificios = [edificioCultural], habitantes = 100000, tanques = 1, sistemaImpositivo = apaciguador)
+	const ciudadInfeliz = new Ciudad(imperio = imperioSinDeuda, edificios = [edificioMilitar], habitantes = 100000, tanques = 1, sistemaImpositivo = apaciguador)
+	const ciudadEndeudada = new Ciudad(imperio = imperioEndeudado, edificios = [edificioCultural], habitantes = 100000, tanques = 1, sistemaImpositivo = new Citadino(cantHabitantesIncremento = 10000))
+	
+	
+	test "Una ciudad está feliz si la tranquilidad de sus edificios es mayor a la disconformidad de sus habitantes y su imperio no está endeudado." {
+		assert.that(ciudadFeliz.esFeliz())
+	}
+	test "Una ciudad no está feliz si la tranquilidad de sus edificios es mayor a la disconformidad de sus habitantes y su imperio no está endeudado."{
+		assert.notThat(ciudadInfeliz.esFeliz())
+	}
+	test "Una ciudad no está feliz si su imperio está endeudado."{
+		assert.notThat(ciudadEndeudada.esFeliz())
+	}
+}
