@@ -1,4 +1,4 @@
-# Calculaadora
+# Calculadora
 
 El proyecto consiste en la implementación de una **calculadora basada en gramáticas formales** con funciones básicas, usando las herramientas de flex y bison. Fue realizado en el marco de la materia **Sintaxis y Semántica de los Lenguajes**.
 
