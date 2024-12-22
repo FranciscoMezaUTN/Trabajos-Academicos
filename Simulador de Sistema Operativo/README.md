@@ -19,10 +19,11 @@ El objetivo principal fue diseñar e implementar un sistema que permita:
 - **Memoria**: Implementa un esquema de paginación y maneja tablas de páginas y espacio de usuario.
 - **Interfaces de I/O**: Gestiona interacciones con dispositivos simulados, como teclado, pantalla y un sistema de archivos básico.
 
-## Habilidades Técnicas Demostradas
+## Habilidades Técnicas 
 
 - **Programación en C**: Diseño modular y eficiente, uso de estructuras de datos y manejo de memoria dinámica.
 - **Sistemas Distribuidos**: Comunicación entre procesos mediante sockets y sincronización multihilo.
 - **Conceptos de Sistemas Operativos**: Planificación de procesos, administración de memoria y manejo de recursos.
 - **Depuración y Testing**: Uso de logs detallados y pruebas en entornos distribuidos para asegurar el correcto funcionamiento.
 - **Herramientas de Desarrollo**: Uso de Makefiles, configuración mediante archivos y control de versiones con Git.
+- **Entornos virtualizados**: Configuración y uso de una máquina virtual para desarrollar y probar en un sistema operativo Linux, asegurando un entorno de trabajo aislado y reproducible.
