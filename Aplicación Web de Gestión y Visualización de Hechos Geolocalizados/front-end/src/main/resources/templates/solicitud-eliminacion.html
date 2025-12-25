@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Eliminación - MetaMapa</title>
+
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/hecho.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="detail-container">
+
+    <div class="stat-card">
+
+        <h1 class="section-title">Solicitar Eliminación</h1>
+
+        <div th:if="${globalError}" class="api-error-alert">
+            <strong th:text="${globalError}"></strong>
+            <ul th:if="${errorDetails}" class="error-list">
+                <li th:each="det : ${errorDetails}" th:text="${det}"></li>
+            </ul>
+        </div>
+
+        <div class="fact-summary">
+            <div class="content-block">
+                <span class="content-title" style="margin-bottom: 5px;">Hecho seleccionado</span>
+                <h3 th:text="${hecho.titulo}">Título</h3>
+                <p th:text="${hecho.descripcion}">Descripción...</p>
+
+                <div class="summary-meta">
+                    Fecha del hecho: <span th:text="${#temporals.format(hecho.fechaHecho, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</span>
+                </div>
+            </div>
+        </div>
+
+        <form th:action="@{|/hechos/${id}/solicitud-eliminacion|}"
+              th:object="${solicitud}"
+              method="post"
+              id="form-reporte">
+
+            <input type="hidden" th:field="*{idHecho}">
+
+            <input type="hidden" th:field="*{usuario}">
+
+            <div class="content-block" style="border-bottom: none; padding-bottom: 0">
+                <label class="content-title" for="justificacion">Justificación de la solicitud</label>
+
+                <textarea id="justificacion"
+                          th:field="*{justificacion}"
+                          class="clean-input"
+                          rows="6"
+                          placeholder="Por favor, explicá detalladamente por qué considerás que este hecho debe ser eliminado..."
+                          th:classappend="${errores != null and errores.containsKey('justificacion')} ? 'input-error' : ''"></textarea>
+
+                <span class="field-error-msg"
+                      th:if="${errores != null and errores.containsKey('justificacion')}"
+                      th:text="${errores['justificacion']}">
+                    Error del backend aquí
+                </span>
+
+                <div class="mt-2">
+                    <div class="input-warning-msg">
+                        Para asegurar la validez del reporte, la justificación debe tener al menos 500 caracteres.
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn--third">
+                    Enviar Solicitud
+                </button>
+
+                <a th:href="@{|/hechos/${id}/detalle|}" class="btn btn--secondary">
+                    Cancelar
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

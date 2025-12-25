@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="fact-modal" id="fact-modal" class="modal">
+    <div class="modal__content">
+
+        <div class="modal__header">
+            <h3 id="modal-title" class="modal__title">Título del Hecho</h3>
+            <span class="modal__close">&times;</span>
+        </div>
+
+        <div class="modal__body">
+            <div class="fact-description">
+                <p id="modal-description">Descripción del hecho...</p>
+            </div>
+
+            <div class="fact-metadata">
+                <div class="meta-row">
+                    <span class="meta-label">Categoría:</span>
+                    <span id="modal-category" class="meta-value">-</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Fecha:</span>
+                    <span id="modal-date" class="meta-value">-</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Ubicación:</span>
+                    <span id="modal-location" class="meta-value">-</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Fuentes:</span>
+                    <span id="modal-source" class="meta-value">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+
+            <button id="report-button" class="btn btn-danger-outline">
+                Solicitar Eliminación
+            </button>
+
+            <a id="ver-hecho-btn" href="#" class="btn btn--primary">
+                Ver Detalle
+            </a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

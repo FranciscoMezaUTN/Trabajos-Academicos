@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revisión de Solicitud de Eliminación</title>
+
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/hecho.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+
+<body>
+<div class="admin-layout">
+    <aside class="sidebar">
+        <a th:href="@{/}" class="logo">MetaMapa Admin</a>
+        <nav class="sidebar__nav">
+            <a th:href="@{/admin/dashboard}" class="sidebar__link">Dashboard</a>
+            <a th:href="@{/admin/colecciones}" class="sidebar__link">Colecciones</a>
+            <a th:href="@{/admin/revisiones}" class="sidebar__link sidebar__link--active">Revisiones</a>
+        </nav>
+        <a th:href="@{/auth/logout}" class="btn btn--secondary sidebar__logout">Cerrar Sesión</a>
+    </aside>
+
+    <div class="main-content">
+        <div class="detail-container">
+
+            <h1 class="page-title">Revisión de Solicitud de Eliminación</h1>
+
+            <div th:if="${mensaje}" class="api-success-alert mb-2">
+                <span th:text="${mensaje}"></span>
+            </div>
+
+            <div class="stat-card">
+
+                <div style="margin-bottom: 20px;">
+                    <h1 class="section-title" th:text="${hechoOriginal.titulo}">Título del Hecho (A Eliminar)</h1>
+                </div>
+
+                <div class="content-block" style="padding-bottom: 0;">
+                    <h2 class="content-title" style="font-size: 1.2rem; color: var(--third-color);">Datos del Reporte</h2>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="content-title">Justificación del Solicitante</h3>
+                    <p th:text="${solicitudEliminacion.justificacion}" style="white-space: pre-wrap; font-weight: 500;"></p>
+                </div>
+
+                <div class="content-block" style="border-bottom: none; padding-bottom: 20px;">
+                    <h3 class="content-title">Usuario Solicitante</h3>
+                    <p th:text="${solicitudEliminacion.usuario}"></p>
+                </div>
+
+                <hr style="border: 0; border-top: 1px dashed #e2e8f0; margin: 30px 0;" />
+
+
+                <div class="content-block">
+                    <h2 class="content-title" style="font-size: 1.2rem; color: var(--primary-color);">Detalle Completo del Hecho</h2>
+                </div>
+
+                <div class="content-block" th:if="${not #lists.isEmpty(hechoOriginal.multimedia)}">
+                    <h3 class="content-title">Imágenes</h3>
+                    <div class="carousel-wrapper" id="carousel-container">
+                        <button type="button" class="carousel-btn prev" id="btn-prev">&#10094;</button>
+
+                        <div class="gallery-track" id="carousel-track">
+                            <div th:each="imagen : ${hechoOriginal.multimedia}" class="gallery-item">
+                                <img th:src="@{'/hechos/uploads/' + ${imagen}}" th:alt="'Evidencia'">
+                            </div>
+                        </div>
+                        <button type="button" class="carousel-btn next" id="btn-next">&#10095;</button>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="content-title">Descripción</h3>
+                    <p th:text="${hechoOriginal.descripcion}"></p>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="content-title">Categoría</h3>
+                    <p th:text="${hechoOriginal.categoria}"></p>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="content-title">Fecha del Hecho</h3>
+                    <p th:text="${#temporals.format(hechoOriginal.fechaHecho, 'dd/MM/yyyy HH:mm')}"></p>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="content-title">Fuentes</h3>
+                    <div th:if="${not #lists.isEmpty(hechoOriginal.fuentes)}" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                      <span th:each="fuente : ${hechoOriginal.fuentes}"
+                            th:text="${fuente.nombre}"
+                            style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 16px; font-size: 0.85em; color: #475569; font-weight: 500;">
+                          Fuente
+                      </span>
+                    </div>
+                    <p th:if="${#lists.isEmpty(hechoOriginal.fuentes)}" style="color: #94a3b8; font-style: italic;">
+                        No se han especificado fuentes.
+                    </p>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="content-title">Detalles de Ubicación</h3>
+                    <table class="detail-table">
+                        <tbody>
+                        <tr>
+                            <th>Provincia</th>
+                            <td th:text="${hechoOriginal.ubicacionDTO != null ? hechoOriginal.ubicacionDTO.provincia : '-'}">Provincia</td>
+                        </tr>
+                        <tr>
+                            <th>Municipio</th>
+                            <td th:text="${hechoOriginal.ubicacionDTO != null ? hechoOriginal.ubicacionDTO.municipio : '-'}">Municipio</td>
+                        </tr>
+                        <tr>
+                            <th>Departamento</th>
+                            <td th:text="${hechoOriginal.ubicacionDTO != null ? hechoOriginal.ubicacionDTO.departamento : '-'}">Departamento</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-block" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+                    <h3 class="content-title">Ubicación en mapa</h3>
+                    <div id="map-preview" style="height: 400px; border-radius: 8px;"></div>
+                </div>
+
+                <div class="form-actions">
+                    <form th:action="@{/admin/revisiones/solicitudes/{id}/aceptar(id=${solicitudEliminacion.id})}" method="post">
+                        <button class="btn btn--primary" onclick="return confirm('ATENCIÓN: Esto eliminará el hecho de forma PERMANENTE. ¿Confirmar?')">Aprobar Eliminación</button>
+                    </form>
+
+                    <form th:action="@{/admin/revisiones/solicitudes/{id}/rechazar(id=${solicitudEliminacion.id})}" method="post">
+                        <button class="btn btn--third">Rechazar Solicitud</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const hechoData = /*[[${hechoOriginal}]]*/ null;
+
+        // --- MAPA ---
+        const mapElement = document.getElementById('map-preview');
+
+        if (mapElement && hechoData && hechoData.ubicacionDTO && hechoData.ubicacionDTO.latitud != null) {
+            const latInicial = hechoData.ubicacionDTO.latitud;
+            const lngInicial = hechoData.ubicacionDTO.longitud;
+            const tituloHecho = hechoData.titulo;
+
+            const map = L.map(mapElement.id).setView([latInicial, lngInicial], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+
+            L.marker([latInicial, lngInicial]).addTo(map).bindPopup(tituloHecho).openPopup();
+
+            // Fix para el renderizado si está en una pestaña oculta (Admin)
+            setTimeout(() => { map.invalidateSize(); }, 300);
+        }
+
+        // --- CARRUSEL ---
+        const track = document.getElementById('carousel-track');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+
+        if (!track || track.children.length === 0) return;
+
+        const slidesOriginales = Array.from(track.children);
+        if (slidesOriginales.length < 2) {
+            if(btnPrev) btnPrev.style.display = 'none';
+            if(btnNext) btnNext.style.display = 'none';
+            return;
+        }
+
+        // --- LÓGICA DEL BUCLE INFINITO (Copia y Adaptación) ---
+        const firstClone = slidesOriginales[0].cloneNode(true);
+        const lastClone = slidesOriginales[slidesOriginales.length - 1].cloneNode(true);
+
+        firstClone.id = 'first-clone';
+        lastClone.id = 'last-clone';
+
+        track.append(firstClone);
+        track.prepend(lastClone);
+
+        const slides = track.children;
+        let counter = 1;
+        let size = slidesOriginales[0].clientWidth;
+
+        track.style.transform = 'translateX(' + (-size * counter) + 'px)';
+
+        window.addEventListener('resize', () => {
+            size = track.clientWidth;
+            track.style.transition = "none";
+            track.style.transform = 'translateX(' + (-size * counter) + 'px)';
+        });
+
+        const moveToNext = () => {
+            if (counter >= slides.length - 1) return;
+            track.style.transition = "transform 0.4s ease-in-out";
+            counter++;
+            track.style.transform = 'translateX(' + (-size * counter) + 'px)';
+        };
+
+        const moveToPrev = () => {
+            if (counter <= 0) return;
+            track.style.transition = "transform 0.4s ease-in-out";
+            counter--;
+            track.style.transform = 'translateX(' + (-size * counter) + 'px)';
+        };
+
+        if(btnNext) btnNext.addEventListener('click', moveToNext);
+        if(btnPrev) btnPrev.addEventListener('click', moveToPrev);
+
+        track.addEventListener('transitionend', () => {
+            if (slides[counter].id === 'first-clone') {
+                track.style.transition = "none";
+                counter = 1;
+                track.style.transform = 'translateX(' + (-size * counter) + 'px)';
+            }
+            if (slides[counter].id === 'last-clone') {
+                track.style.transition = "none";
+                counter = slides.length - 2;
+                track.style.transform = 'translateX(' + (-size * counter) + 'px)';
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Hecho - MetaMapa</title>
+
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/hecho.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="detail-container">
+
+    <div th:if="${mensaje}" class="api-success-alert mt-2 mb-2">
+        <span th:text="${mensaje}"></span>
+    </div>
+
+    <div class="stat-card">
+
+        <form th:object="${hecho}"
+              th:action="@{/hechos/crear-hecho}"
+              method="post" enctype="multipart/form-data">
+
+            <input type="hidden" th:field="*{usuario}">
+
+            <div style="margin-bottom: 20px;">
+                <h1 class="section-title">Crear Hecho</h1>
+            </div>
+
+            <div th:if="${globalError}" class="api-error-alert">
+                <strong th:text="${globalError}"></strong>
+                <ul th:if="${errorDetails}" class="error-list">
+                    <li th:each="det : ${errorDetails}" th:text="${det}"></li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <label class="content-title">Imágenes</label>
+
+                <div class="gallery-container editable-gallery" id="main-gallery"
+                     th:style="${#lists.isEmpty(hecho.multimedia)} ? 'display: none;' : ''"
+                >
+
+                    <div th:if="${not #lists.isEmpty(hecho.multimedia)}"
+                         th:each="img, stat : *{multimedia}"
+                         class="gallery-item-wrapper existing-item"
+                         th:id="'img-wrapper-' + ${stat.index}">
+
+                        <div class="gallery-item">
+                            <img th:src="@{'/hechos/uploads/' + ${img}}" alt="Existente">
+                        </div>
+
+                        <button type="button" class="btn-delete-img"
+                                th:onclick="'removeExistingImage(' + ${stat.index} + ')'"
+                                title="Eliminar">×</button>
+
+                        <input type="hidden" th:field="*{multimedia[__${stat.index}__]}" th:id="'input-img-' + ${stat.index}">
+                    </div>
+
+                    <div id="preview-container" style="display: contents;"></div>
+
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <input type="file" id="file-input" name="nuevasImagenes" multiple accept="image/*"
+                           onchange="handleFileSelect()">
+
+                    <button type="button" class="btn btn--secondary" onclick="document.getElementById('file-input').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        Seleccionar fotos nuevas
+                    </button>
+                    <span id="file-count" style="margin-left: 10px; color: #666; font-size: 0.9rem;"></span>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <label class="content-title" for="titulo">Título</label>
+                <input id="titulo" class="clean-input" type="text" th:field="*{titulo}"
+                       th:classappend="${errores != null and errores.containsKey('titulo')} ? 'input-error' : ''"
+                       placeholder="Título...">
+                <span class="field-error-msg" th:if="${errores != null and errores.containsKey('titulo')}" th:text="${errores['titulo']}"></span>
+            </div>
+
+            <div class="content-block">
+                <label class="content-title" for="descripcion">Descripción</label>
+                <textarea id="descripcion" class="clean-input" th:field="*{descripcion}" rows="6"
+                          th:classappend="${errores != null and errores.containsKey('descripcion')} ? 'input-error' : ''"
+                          placeholder="Descripción...">
+                </textarea>
+                <span class="field-error-msg" th:if="${errores != null and errores.containsKey('descripcion')}" th:text="${errores['descripcion']}"></span>
+            </div>
+
+            <div class="content-block">
+                <label class="content-title" for="categoria">Categoría</label>
+
+                <div class="autocomplete-wrapper" id="categoria-wrapper">
+
+                    <input id="categoria"
+                           class="clean-input"
+                           type="text"
+                           th:field="*{categoria}"
+                           placeholder="Escribe o selecciona..."
+                           autocomplete="off"
+                           oninput="filterCategories()"
+                           onfocus="showCategories()"
+                           th:classappend="${errores != null and errores.containsKey('categoria')} ? 'input-error' : ''">
+
+                    <ul id="categoria-list" class="autocomplete-list">
+                        <li th:each="cat : ${categorias}"
+                            class="autocomplete-item"
+                            th:text="${cat.nombre}"
+                            th:data-valor="${cat.nombre}"
+                            onclick="selectCategory(this.getAttribute('data-valor'))">
+                        </li>
+
+                        <li id="no-results"
+                            class="autocomplete-item autocomplete-create-item"
+                            onclick="selectCategory(document.getElementById('categoria').value)">
+                            Presiona Enter para crear nueva
+                        </li>
+                    </ul>
+                </div>
+
+                <span class="field-error-msg" th:if="${errores != null and errores.containsKey('categoria')}" th:text="${errores['categoria']}"></span>
+
+                <div th:if="${warningCategorias}" class="input-warning-msg">
+                    <span th:text="${warningCategorias}"></span>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <label class="content-title" for="fecha">Fecha del hecho</label>
+                <input id="fecha" class="clean-input" type="datetime-local" name="fecha"
+                       th:value="${#temporals.format(hecho.fecha, 'yyyy-MM-dd''T''HH:mm')}"
+                       th:classappend="${errores != null and errores.containsKey('fecha')} ? 'input-error' : ''">
+                <span class="field-error-msg" th:if="${errores != null and errores.containsKey('fecha')}" th:text="${errores['fecha']}"></span>
+            </div>
+
+            <div class="content-block" style="border-bottom: none; ; padding-bottom: 0">
+                <label class="content-title" for="address-input">Ubicación (Click en el mapa para corregir automáticamente)</label>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="address-input" class="clean-input" placeholder="Buscar dirección...">
+                    <button type="button" class="btn btn--secondary" id="geocode-btn">Buscar</button>
+                </div>
+
+                <div id="map-editable" style="height: 400px; border-radius: 8px;"></div>
+
+                <input type="hidden" id="lat-input" th:field="*{latitud}">
+                <input type="hidden" id="lng-input" th:field="*{longitud}">
+
+                <div th:if="${errores != null}">
+                    <span class="field-error-msg" th:if="${errores.containsKey('latitud')}" th:text="${errores['latitud']}"></span>
+                    <span class="field-error-msg" th:if="${errores.containsKey('longitud')}" th:text="${errores['longitud']}"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Crear Hecho</button>
+                <a th:href="@{/home}" class="btn btn--third">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script th:inline="javascript">
+    // IMAGENES -----------------------------------
+    // Variable global para acumular archivos
+    let dt = new DataTransfer();
+
+    function handleFileSelect() {
+        const fileInput = document.getElementById('file-input');
+        const newFiles = fileInput.files;
+
+        // 1. Agregamos archivos al acumulador
+        for (let i = 0; i < newFiles.length; i++) {
+            if (newFiles[i].type.startsWith('image/')) {
+                // Chequeo simple de duplicados por nombre y tamaño
+                let exists = false;
+                for(let j=0; j<dt.files.length; j++){
+                    if(dt.files[j].name === newFiles[i].name && dt.files[j].size === newFiles[i].size){
+                        exists = true; break;
+                    }
+                }
+                if(!exists) dt.items.add(newFiles[i]);
+            }
+        }
+
+        // 2. Sincronizamos el input real
+        fileInput.files = dt.files;
+
+        // 3. Renderizamos
+        renderNewPreviews();
+        updateGalleryVisibility();
+    }
+
+    function renderNewPreviews() {
+        const previewContainer = document.getElementById('preview-container');
+        const fileCount = document.getElementById('file-count');
+
+        // Limpiamos lo visual anterior
+        previewContainer.innerHTML = '';
+
+        // Texto del contador
+        if (dt.files.length > 0) {
+            fileCount.textContent = `${dt.files.length} imagen(es) nueva(s)`;
+        } else {
+            fileCount.textContent = '';
+        }
+
+        // Generamos el HTML para cada foto nueva
+        Array.from(dt.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gallery-item-wrapper';
+
+                // AQUI ESTÁ LA MAGIA:
+                // Usamos la clase 'gallery-item-new' que definimos en CSS para el borde punteado
+                wrapper.innerHTML = `
+                <div class="gallery-item gallery-item-new">
+                    <img src="${e.target.result}" alt="Nueva">
+                </div>
+                <span class="badge-new">NUEVA</span>
+
+                <button type="button" class="btn-delete-img"
+                        onclick="removeNewFile(${index})"
+                        title="Quitar esta foto">×</button>
+            `;
+                previewContainer.appendChild(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeNewFile(index) {
+        const fileInput = document.getElementById('file-input');
+
+        // Creamos un DataTransfer nuevo excluyendo el borrado
+        const newDt = new DataTransfer();
+        Array.from(dt.files).forEach((file, i) => {
+            if (i !== index) newDt.items.add(file);
+        });
+
+        // Actualizamos global e input
+        dt = newDt;
+        fileInput.files = dt.files;
+
+        renderNewPreviews();
+        updateGalleryVisibility();
+    }
+
+    function removeExistingImage(index) {
+        // Borramos el wrapper del DOM
+        const wrapper = document.getElementById('img-wrapper-' + index);
+        if(wrapper) {
+            wrapper.remove();
+            // Borramos también el input hidden para que Spring sepa que se fue
+            const inputHidden = document.getElementById('input-img-' + index);
+            if(inputHidden) inputHidden.remove();
+
+            updateGalleryVisibility();
+        }
+    }
+
+    function updateGalleryVisibility() {
+        const gallery = document.getElementById('main-gallery');
+        // Buscamos clases "existing-item" que sigan vivas en el DOM
+        const existingItems = document.querySelectorAll('.existing-item');
+        const newItemsCount = dt.files.length;
+
+        // Si no hay viejas Y no hay nuevas -> Ocultamos el contenedor gris (opcional)
+        // Si preferís que el contenedor gris quede siempre visible, borrá este IF.
+        if (existingItems.length === 0 && newItemsCount === 0) {
+            gallery.style.display = 'none';
+        } else {
+            gallery.style.display = 'flex';
+        }
+    }
+
+    // MAPA -----------------------------------
+    document.addEventListener('DOMContentLoaded', function() {
+        /* Configuración Inicial */
+        // Usamos los campos planos del EditarHechoDTO
+        const latInicial = /*[[${hecho.latitud ?: -34.6037}]]*/ -34.6037;
+        const lngInicial = /*[[${hecho.longitud ?: -58.3816}]]*/ -58.3816;
+
+        // Elementos del DOM
+        const mapElement = document.getElementById('map-editable');
+        const latInput = document.getElementById('lat-input');
+        const lngInput = document.getElementById('lng-input');
+        const addressInput = document.getElementById('address-input');
+        const geocodeBtn = document.getElementById('geocode-btn');
+
+        if (mapElement) {
+            const map = L.map('map-editable').setView([latInicial, lngInicial], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+            let marker = L.marker([latInicial, lngInicial]).addTo(map);
+
+            function updateMapAndInputs(lat, lng) {
+                if (marker) map.removeLayer(marker);
+                marker = L.marker([lat, lng]).addTo(map);
+                latInput.value = lat;
+                lngInput.value = lng;
+            }
+
+            // 1. Click en mapa -> Actualiza marker y busca dirección (Reverse Geo)
+            map.on('click', (e) => {
+                const { lat, lng } = e.latlng;
+                updateMapAndInputs(lat, lng);
+
+                addressInput.value = "Buscando dirección exacta...";
+                addressInput.disabled = true;
+
+                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+                fetch(url)
+                    .then(r => r.json())
+                    .then(data => {
+                        if(data && data.display_name) {
+                            addressInput.value = data.display_name;
+                        } else {
+                            addressInput.value = "Ubicación seleccionada";
+                        }
+                    })
+                    .catch(() => addressInput.value = "Error al obtener calle")
+                    .finally(() => addressInput.disabled = false);
+            });
+
+            // 2. Botón Buscar -> Busca coordenadas por texto
+            if(geocodeBtn) {
+                geocodeBtn.addEventListener('click', () => {
+                    const address = addressInput.value.trim();
+                    if (!address) { alert("Ingresá una dirección."); return; }
+
+                    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+                    fetch(url).then(r => r.json()).then(data => {
+                        if (data && data.length > 0) {
+                            const { lat, lon } = data[0];
+                            updateMapAndInputs(parseFloat(lat), parseFloat(lon));
+                            map.setView([lat, lon], 16);
+                        } else { alert("No se encontraron resultados."); }
+                    }).catch(() => alert("Error buscando dirección."));
+                });
+            }
+        }
+    });
+
+    // CATEGORIAS -----------------------------------
+    const inputCat = document.getElementById('categoria');
+    const listCat = document.getElementById('categoria-list');
+    // Obtenemos todos los items originales
+    const allItems = listCat ? listCat.getElementsByClassName('autocomplete-item') : [];
+
+    let currentFocus = -1; // Índice del elemento seleccionado (-1 es ninguno)
+
+    // 1. Escuchar el teclado en el input
+    inputCat.addEventListener("keydown", function(e) {
+        if (!listCat.classList.contains('active')) return;
+
+        // Obtenemos solo los items que están VISIBLES actualmente
+        let visibleItems = getVisibleItems();
+
+        if (e.key === "ArrowDown") { // Flecha Abajo
+            currentFocus++;
+            addActive(visibleItems);
+        } else if (e.key === "ArrowUp") { // Flecha Arriba
+            currentFocus--;
+            addActive(visibleItems);
+        } else if (e.key === "Enter") { // Enter
+            if (currentFocus > -1) {
+                // Si hay un item marcado, simulamos el click
+                e.preventDefault(); // Evita que el form se envíe
+                if (visibleItems[currentFocus]) {
+                    visibleItems[currentFocus].click();
+                }
+            }
+        } else if (e.key === "Escape") { // Escape
+            closeList();
+        }
+    });
+
+    // Función auxiliar para obtener solo lo que se ve
+    function getVisibleItems() {
+        let visibles = [];
+        for (let i = 0; i < allItems.length; i++) {
+            // CAMBIO: Ahora SOLO ignoramos los que tienen display: none.
+            // Ya NO ignoramos el 'no-results', así podemos seleccionarlo con flechas.
+            if (allItems[i].style.display !== "none") {
+                visibles.push(allItems[i]);
+            }
+        }
+        return visibles;
+    }
+
+    // Función para pintar el item activo
+    function addActive(x) {
+        if (!x || x.length === 0) return false;
+
+        // Circular: si baja del último, vuelve al primero
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+
+        removeActive(x); // Limpiar estilo anterior
+
+        // Agregar clase activa
+        x[currentFocus].classList.add("autocomplete-active");
+
+        // Scroll automático: asegurarnos que el item sea visible
+        x[currentFocus].scrollIntoView({ block: 'nearest', inline: 'start' });
+    }
+
+    // Función para limpiar estilos
+    function removeActive(x) {
+        for (let i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+
+    function showCategories() {
+        if(!listCat) return;
+        filterCategories();
+        listCat.classList.add('active');
+        inputCat.classList.add('dropdown-open');
+    }
+
+    function filterCategories() {
+        if(!listCat) return;
+        const filter = inputCat.value.toLowerCase();
+        let visibleCount = 0;
+
+        // RESETEAMOS el foco cada vez que escribe
+        currentFocus = -1;
+        // Quitamos la clase activa de todos
+        removeActive(allItems);
+
+        for (let i = 0; i < allItems.length; i++) {
+            const item = allItems[i];
+            if (item.id === 'no-results') continue;
+
+            const txtValue = item.textContent || item.innerText;
+
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                item.style.display = "";
+                visibleCount++;
+            } else {
+                item.style.display = "none";
+            }
+        }
+
+        const noResults = document.getElementById('no-results');
+        if (visibleCount === 0 && filter !== '') {
+            if(noResults) {
+                noResults.style.display = "block";
+                noResults.innerText = `Crear nueva: "${inputCat.value}"`;
+            }
+        } else {
+            if(noResults) noResults.style.display = "none";
+        }
+
+        listCat.classList.add('active');
+    }
+
+    function selectCategory(valor) {
+        inputCat.value = valor;
+        closeList();
+    }
+
+    function closeList() {
+        if(listCat) {
+            listCat.classList.remove('active');
+            inputCat.classList.remove('dropdown-open');
+            currentFocus = -1; // Resetear índice
+        }
+    }
+
+    // Cerrar click afuera
+    document.addEventListener('click', function(e) {
+        const wrapper = document.getElementById('categoria-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            closeList();
+        }
+    });
+</script>
+
+</body>
+
+</html>

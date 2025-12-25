@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Colección - MetaMapa Admin</title>
+
+  <link rel="stylesheet" th:href="@{/css/global.css}">
+  <link rel="stylesheet" th:href="@{/css/admin.css}">
+  <link rel="stylesheet" th:href="@{/css/hecho.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <a th:href="@{/}" class="logo">MetaMapa Admin</a>
+    <nav class="sidebar__nav">
+      <a th:href="@{/admin/dashboard}" class="sidebar__link">Dashboard</a>
+      <a th:href="@{/admin/colecciones}" class="sidebar__link sidebar__link--active">Colecciones</a>
+      <a th:href="@{/admin/revisiones}" class="sidebar__link">Revisiones</a>
+      <a th:href="@{/admin/estadisticas}" class="sidebar__link">Estadísticas </a>
+    </nav>
+    <a th:href="@{/auth/logout}" class="btn btn--secondary sidebar__logout">Cerrar Sesión</a>
+  </aside>
+
+  <div class="main-content">
+    <div class="detail-container">
+
+      <h1 class="page-title">Gestión de Colecciones</h1>
+
+      <div class="stat-card">
+        <form th:action="@{/admin/colecciones/crear}"
+              th:object="${coleccion}"
+              method="post">
+
+          <div style="margin-bottom: 20px;">
+            <h1 class="section-title">Crear Nueva Colección</h1>
+          </div>
+
+          <div th:if="${globalError}" class="api-error-alert mb-2">
+            <strong th:text="${globalError}"></strong>
+            <ul th:if="${errorDetails}" class="error-list">
+              <li th:each="det : ${errorDetails}" th:text="${det}"></li>
+            </ul>
+          </div>
+
+          <div th:if="${#fields.hasGlobalErrors()}" class="api-error-alert mb-2">
+            <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+          </div>
+
+          <div class="content-block">
+            <label class="content-title" for="titulo">Título</label>
+            <input type="text" id="titulo" th:field="*{titulo}" class="clean-input"
+                   th:classappend="${#fields.hasErrors('titulo')} ? 'input-error' : ''"
+                   placeholder="Ej: Eventos Naturales de Argentina">
+            <span class="field-error-msg" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></span>
+          </div>
+
+          <div class="content-block">
+            <label class="content-title" for="descripcion">Descripción</label>
+            <textarea id="descripcion" th:field="*{descripcion}" class="clean-input" rows="4"
+                      th:classappend="${#fields.hasErrors('descripcion')} ? 'input-error' : ''"></textarea>
+            <span class="field-error-msg" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></span>
+          </div>
+
+          <div class="content-block">
+            <label class="content-title">Fuentes Asociadas</label>
+
+            <div th:if="${#lists.isEmpty(fuentesDisponibles)}" class="input-warning-msg">
+              No hay fuentes disponibles.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(fuentesDisponibles)}" class="checkbox-list">
+
+              <div th:each="fuente : ${fuentesDisponibles}" class="checkbox-card">
+
+                <input type="checkbox"
+                       th:field="*{fuentesIds}"
+                       th:value="${fuente.id}"
+                       th:id="${'fuente-' + fuente.id}">
+
+                <label th:for="${'fuente-' + fuente.id}"
+                       th:text="${fuente.nombre}">
+                </label>
+              </div>
+
+            </div>
+
+            <span class="field-error-msg" th:if="${#fields.hasErrors('fuentesIds')}" th:errors="*{fuentesIds}"></span>
+          </div>
+
+          <div class="content-block">
+            <label class="content-title">Algoritmo de Consenso</label>
+            <select th:field="*{algoritmoConsenso}" class="clean-input">
+              <option value="">Seleccioná un algoritmo (opcional)</option>
+              <option value="MULTIPLES_MENCIONES">Múltiples menciones</option>
+              <option value="MAYORIA_SIMPLE">Mayoría simple</option>
+              <option value="ABSOLUTA">Absoluta</option>
+            </select>
+          </div>
+
+          <div class="content-block" style="border-bottom: none; padding-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <label class="content-title" style="margin-bottom: 0;">Criterios de Pertenencia</label>
+              <button type="button" class="btn btn--small btn--secondary" onclick="agregarCriterio()">Agregar Criterio</button>
+            </div>
+
+            <div id="criterios-container">
+              <div th:each="criterio, stat : *{criteriosDePertenencias}"
+                   class="criterio-card"
+                   th:id="|criterio-row-${stat.index}|">
+
+                <button type="button" class="btn-delete-criterio" th:attr="onclick=|eliminarCriterio(${stat.index})|" title="Eliminar">&times;</button>
+
+                <div class="form-grid-2">
+                  <div>
+                    <label class="content-title" style="font-size: 0.8rem;">Nombre del Criterio</label>
+                    <input type="text"
+                           th:field="*{criteriosDePertenencias[__${stat.index}__].nombreCriterio}"
+                           class="clean-input"
+                           th:classappend="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].nombreCriterio')} ? 'input-error' : ''">
+                    <span class="field-error-msg" th:if="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].nombreCriterio')}" th:errors="*{criteriosDePertenencias[__${stat.index}__].nombreCriterio}"></span>
+                  </div>
+                  <div>
+                    <label class="content-title" style="font-size: 0.8rem;">Tipo de Criterio</label>
+                    <select th:field="*{criteriosDePertenencias[__${stat.index}__].tipoCriterio}"
+                            class="clean-input"
+                            th:attr="onchange=|actualizarParametros(this, ${stat.index})|"
+                            th:classappend="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].tipoCriterio')} ? 'input-error' : ''">
+                      <option value="">Seleccionar tipo...</option>
+                      <option value="FECHA">Rango de Fechas</option>
+                      <option value="CATEGORIA">Categoría Específica</option>
+                    </select>
+                    <span class="field-error-msg" th:if="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].tipoCriterio')}" th:errors="*{criteriosDePertenencias[__${stat.index}__].tipoCriterio}"></span>
+                  </div>
+                </div>
+
+                <div th:id="|parametros-${stat.index}|">
+
+                  <th:block th:if="${#strings.toString(criterio.tipoCriterio) == 'FECHA'}">
+                    <div class="form-grid-2">
+                      <div>
+                        <label class="content-title" style="font-size: 0.8rem;">Desde</label>
+                        <input type="date"
+                               th:field="*{criteriosDePertenencias[__${stat.index}__].parametros['fechaInicio']}"
+                               class="clean-input"
+                               th:classappend="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].parametros[fechaInicio]')} ? 'input-error' : ''">
+
+                        <span class="field-error-msg"
+                              th:if="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].parametros[fechaInicio]')}"
+                              th:errors="*{criteriosDePertenencias[__${stat.index}__].parametros[fechaInicio]}">
+                      </span>
+                      </div>
+
+                      <div>
+                        <label class="content-title" style="font-size: 0.8rem;">Hasta</label>
+                        <input type="date"
+                               th:field="*{criteriosDePertenencias[__${stat.index}__].parametros['fechaFin']}"
+                               class="clean-input"
+                               th:classappend="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].parametros[fechaFin]')} ? 'input-error' : ''">
+
+                        <span class="field-error-msg"
+                              th:if="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].parametros[fechaFin]')}"
+                              th:errors="*{criteriosDePertenencias[__${stat.index}__].parametros[fechaFin]}">
+                      </span>
+                      </div>
+                    </div>
+                  </th:block>
+
+                  <th:block th:if="${#strings.toString(criterio.tipoCriterio) == 'CATEGORIA'}">
+                    <label class="content-title" style="font-size: 0.8rem;">Categoría Requerida</label>
+                    <div class="autocomplete-wrapper" th:id="|cat-wrapper-${stat.index}|">
+                      <input type="text"
+                             th:id="|cat-input-${stat.index}|"
+                             th:field="*{criteriosDePertenencias[__${stat.index}__].parametros['categoria']}"
+                             class="clean-input"
+                             placeholder="Escribe o selecciona..."
+                             autocomplete="off"
+                             th:attr="oninput=|filterDynamicCat(${stat.index})|, onfocus=|showDynamicCat(${stat.index})|, onkeydown=|handleKeydown(${stat.index}, event)|"
+                             th:classappend="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].parametros[categoria]')} ? 'input-error' : ''">
+
+                      <ul th:id="|cat-list-${stat.index}|" class="autocomplete-list">
+                        <li th:each="cat : ${categoriasDisponibles}"
+                            class="autocomplete-item"
+                            th:text="${cat.nombre}"
+                            th:attr="onclick=|selectDynamicCat(${stat.index}, '${cat.nombre}')|">
+                        </li>
+                        <li th:id="|no-results-${stat.index}|"
+                            class="autocomplete-item autocomplete-create-item"
+                            th:attr="onclick=|selectNewCategory(${stat.index})|">
+                        </li>
+                      </ul>
+                    </div>
+
+                    <span class="field-error-msg"
+                          th:if="${#fields.hasErrors('criteriosDePertenencias[__${stat.index}__].parametros[categoria]')}"
+                          th:errors="*{criteriosDePertenencias[__${stat.index}__].parametros[categoria]}"></span>
+                  </th:block>
+                </div>
+              </div>
+            </div>
+
+            <span class="field-error-msg"
+                  th:if="${#fields.hasErrors('criteriosDePertenencias')}"
+                  th:errors="*{criteriosDePertenencias}">
+          </span>
+
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Crear Colección</button>
+            <a th:href="@{/admin/colecciones}" class="btn btn--third">Cancelar</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+
+  /*[[${categoriasDisponibles}]]*/
+  const categoriasBackend = [[${categoriasDisponibles}]] || [];
+  let criterioIndex = [[${coleccion.criteriosDePertenencias != null ? coleccion.criteriosDePertenencias.size() : 0}]];
+  let focusStates = {};
+
+  function selectNewCategory(index) {
+    const input = document.getElementById('cat-input-' + index);
+    if(input) selectDynamicCat(index, input.value);
+  }
+
+  // --- AGREGAR CRITERIO (JS) ---
+  function agregarCriterio() {
+    const container = document.getElementById('criterios-container');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'criterio-card'; // Clase de hecho.css
+    wrapper.id = `criterio-row-${criterioIndex}`;
+
+    wrapper.innerHTML = `
+            <button type="button" class="btn-delete-criterio" onclick="eliminarCriterio(${criterioIndex})" title="Eliminar">&times;</button>
+
+            <div class="form-grid-2">
+                <div>
+                    <label class="content-title" style="font-size: 0.8rem;">Nombre del Criterio</label>
+                    <input type="text" name="criteriosDePertenencias[${criterioIndex}].nombreCriterio" class="clean-input">
+                </div>
+                <div>
+                    <label class="content-title" style="font-size: 0.8rem;">Tipo de Criterio</label>
+                    <select name="criteriosDePertenencias[${criterioIndex}].tipoCriterio" class="clean-input" onchange="actualizarParametros(this, ${criterioIndex})" style="background: white;">
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="FECHA">Rango de Fechas</option>
+                        <option value="CATEGORIA">Categoría Específica</option>
+                    </select>
+                </div>
+            </div>
+            <div id="parametros-${criterioIndex}"></div>
+        `;
+    container.appendChild(wrapper);
+    criterioIndex++;
+  }
+
+  function eliminarCriterio(index) {
+    const row = document.getElementById(`criterio-row-${index}`);
+    if(row) row.remove();
+    delete focusStates[index];
+  }
+
+  // --- ACTUALIZAR PARÁMETROS (JS) ---
+  function actualizarParametros(select, index) {
+    const tipo = select.value;
+    const paramsContainer = document.getElementById(`parametros-${index}`);
+    paramsContainer.innerHTML = "";
+
+    if (tipo === "FECHA") {
+      // Usamos form-grid-2 para alinear fechas
+      paramsContainer.innerHTML = `
+                <div class="form-grid-2">
+                    <div>
+                        <label class="content-title" style="font-size: 0.8rem;">Desde</label>
+                        <input type="date" name="criteriosDePertenencias[${index}].parametros[fechaInicio]" class="clean-input">
+                    </div>
+                    <div>
+                        <label class="content-title" style="font-size: 0.8rem;">Hasta</label>
+                        <input type="date" name="criteriosDePertenencias[${index}].parametros[fechaFin]" class="clean-input">
+                    </div>
+                </div>`;
+    } else if (tipo === "CATEGORIA") {
+      let opts = "";
+      categoriasBackend.forEach(cat => {
+        opts += `<li class="autocomplete-item" onclick="selectDynamicCat(${index}, '${cat.nombre}')">${cat.nombre}</li>`;
+      });
+      opts += `<li id="no-results-${index}" class="autocomplete-item autocomplete-create-item" onclick="selectNewCategory(${index})"></li>`;
+
+      paramsContainer.innerHTML = `
+                <label class="content-title" style="font-size: 0.8rem;">Categoría Requerida</label>
+                <div class="autocomplete-wrapper" id="cat-wrapper-${index}">
+                    <input type="text" id="cat-input-${index}" name="criteriosDePertenencias[${index}].parametros[categoria]" class="clean-input" autocomplete="off"
+                           placeholder="Escribe o selecciona..." oninput="filterDynamicCat(${index})" onfocus="showDynamicCat(${index})" onkeydown="handleKeydown(${index}, event)">
+                    <ul id="cat-list-${index}" class="autocomplete-list">${opts}</ul>
+                </div>`;
+      focusStates[index] = -1;
+    }
+  }
+
+  // --- LÓGICA AUTOCOMPLETE ---
+  window.handleKeydown = function(index, e) {
+    const list = document.getElementById(`cat-list-${index}`);
+    if (!list || !list.classList.contains('active')) return;
+    let items = Array.from(list.getElementsByTagName("li")).filter(i => i.style.display !== "none");
+    if (e.key === "ArrowDown") { focusStates[index]++; addActive(items, index); }
+    else if (e.key === "ArrowUp") { focusStates[index]--; addActive(items, index); }
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      if (focusStates[index] > -1 && items[focusStates[index]]) items[focusStates[index]].click();
+      else if (items.length === 1 && items[0].id.startsWith("no-results")) items[0].click();
+    } else if (e.key === "Escape") closeDynamicList(index);
+  };
+
+  function addActive(items, index) {
+    if (!items.length) return;
+    if (focusStates[index] >= items.length) focusStates[index] = 0;
+    if (focusStates[index] < 0) focusStates[index] = items.length - 1;
+    Array.from(items).forEach(i => i.classList.remove("autocomplete-active"));
+    items[focusStates[index]].classList.add("autocomplete-active");
+    items[focusStates[index]].scrollIntoView({ block: 'nearest' });
+  }
+
+  window.filterDynamicCat = function(index) {
+    const input = document.getElementById(`cat-input-${index}`);
+    const list = document.getElementById(`cat-list-${index}`);
+    if(!input || !list) return;
+    const filter = input.value.toLowerCase();
+    let count = 0;
+
+    Array.from(list.getElementsByTagName("li")).forEach(item => {
+      if (item.id.startsWith("no-results")) return;
+      if (item.innerText.toLowerCase().includes(filter)) { item.style.display = ""; count++; }
+      else { item.style.display = "none"; }
+    });
+
+    const noRes = document.getElementById(`no-results-${index}`);
+    if (count === 0 && filter) {
+      noRes.style.display = "block";
+      noRes.innerText = `Crear nueva: "${input.value}"`;
+    } else { noRes.style.display = "none"; }
+    list.classList.add('active');
+    focusStates[index] = -1;
+  };
+
+  window.showDynamicCat = function(index) {
+    const list = document.getElementById(`cat-list-${index}`);
+    if(list) {
+      window.filterDynamicCat(index);
+      list.classList.add('active');
+    }
+  };
+
+  window.selectDynamicCat = function(index, val) {
+    document.getElementById(`cat-input-${index}`).value = val;
+    closeDynamicList(index);
+  };
+
+  function closeDynamicList(index) {
+    const list = document.getElementById(`cat-list-${index}`);
+    if(list) list.classList.remove('active');
+    focusStates[index] = -1;
+  }
+
+  document.addEventListener('click', function(e) {
+    document.querySelectorAll('.autocomplete-wrapper').forEach(w => {
+      if (!w.contains(e.target)) {
+        const id = w.id.split('-')[2];
+        closeDynamicList(id);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

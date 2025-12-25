@@ -1,0 +1,185 @@
+/* ==========================================
+   LANDING.CSS - Estilos Definitivos Unificados
+   ========================================== */
+
+/* 1. HERO SECTION */
+.hero {
+	text-align: center;
+	padding: 100px 20px;
+	background-color: var(--bg-white);
+}
+
+.hero__title {
+	font-size: 3rem;
+	font-weight: 800;
+	color: var(--primary-color);
+	margin-bottom: 20px;
+	line-height: 1.2;
+	max-width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.hero__subtitle {
+	font-size: 1.25rem;
+	color: var(--text-medium);
+	margin-bottom: 40px;
+	max-width: 600px;
+	margin-left: auto;
+	margin-right: auto;
+	line-height: 1.6;
+}
+
+/* 2. TÍTULOS CON LÍNEA AZUL */
+.featured__title,
+.section-title {
+	text-align: center;
+	margin-bottom: 50px;
+	font-size: 2.25rem;
+	font-weight: 700;
+	color: #1e293b;
+	position: relative;
+}
+
+.featured__title::after,
+.section-title::after {
+	content: "";
+	display: block;
+	width: 60px;
+	height: 4px;
+	background-color: var(--primary-color);
+	margin: 15px auto 0;
+	border-radius: 2px;
+}
+
+/* 3. SECCIONES DE CONTENIDO */
+.featured {
+	padding: 80px 0;
+	background-color: #f8fafc; /* Gris suave */
+}
+
+.featured-fact {
+	padding: 80px 0;
+	background-color: var(--bg-white); /* Blanco */
+}
+
+/* Pila de tarjetas (Stack) */
+.card-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 40px; /* Separación entre tarjetas */
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+/* --- TARJETA UNIFICADA (WIDE CARD) --- */
+.wide-card {
+	background-color: var(--bg-white);
+
+	/* Layout Horizontal */
+	display: flex;
+	flex-direction: row;
+
+	/* Estilos de Caja */
+	border-radius: 16px;
+	overflow: hidden;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+	/* Animación de Levitación */
+	transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+
+	/* Dimensiones */
+	width: 100%;
+	max-width: 1000px;
+	min-height: 320px; /* Altura mínima para que se vea imponente */
+	margin: 0 auto;
+}
+
+/* Efecto Hover */
+.wide-card:hover {
+	transform: translateY(-5px); /* Sube 5px */
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); /* Sombra fuerte */
+	border-color: #cbd5e0;
+}
+
+/* Imagen (Izquierda 50%) */
+.wide-card__img {
+	width: 50%;
+	height: auto;
+	min-height: 100%;
+	object-fit: cover;
+}
+
+/* Contenido (Derecha 50%) */
+.wide-card__content {
+	width: 50%;
+	padding: 40px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+/* Etiqueta (Ej: COLECCION DESTACADA) */
+.wide-card__label {
+	text-transform: uppercase;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	color: var(--primary-color);
+	margin-bottom: 12px;
+	display: block;
+}
+
+/* Título */
+.wide-card__title {
+	font-size: 1.8rem;
+	font-weight: 800;
+	margin-bottom: 15px;
+	color: #1e293b;
+	line-height: 1.2;
+}
+
+/* Descripción */
+.wide-card__description {
+	color: #64748b;
+	font-size: 1.05rem;
+	margin-bottom: 20px;
+	line-height: 1.6;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* 4. FOOTER CALL TO ACTION (Arreglado) */
+.call-to-contribute {
+	padding: 80px 0;
+	text-align: center;
+	background-color: #f8fafc;
+	border-top: 1px solid #e2e8f0;
+	/* Aseguramos que no flote nada raro */
+	clear: both;
+	position: relative;
+	z-index: 10;
+}
+
+.call-to-contribute p {
+	color: var(--text-medium);
+	font-size: 1.25rem;
+	max-width: 600px;
+	margin: 0 auto 40px auto;
+}
+
+/* 5. RESPONSIVE (Móvil) */
+@media (max-width: 768px) {
+	.hero__title { font-size: 2.5rem; }
+
+	/* En móvil la tarjeta se vuelve vertical */
+	.wide-card { flex-direction: column; height: auto; }
+	.wide-card__img { width: 100%; height: 250px; }
+	.wide-card__content { width: 100%; padding: 25px; text-align: center; }
+
+	.call-to-contribute { padding: 60px 20px; }
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión y Propósito - MetaMapa</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos Base y Tipografía */
+        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: #e6edf3; }
+
+        /* Contenedor principal para dar sensación de layout */
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Estilo Futurista de Bloques */
+        .futuristic-card {
+            background-color: #161b22; /* Fondo oscuro */
+            border: 1px solid #30363d; /* Borde sutil */
+            border-radius: 12px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.1); /* Sombra cian */
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #00bcd4; /* Cian brillante */
+            line-height: 1.1;
+        }
+
+        /* Destacados (Monitoreo, Validación, Análisis) */
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 3rem;
+        }
+
+        .highlight-item {
+            background-color: #1e232a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 3px solid #00bcd4; /* Cian para destacar */
+        }
+
+        .highlight-item h3 {
+            color: #e6edf3;
+            font-size: 1.25rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Botones y Enlaces */
+        .btn-action {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-upload {
+            background-color: #00bcd4;
+            color: #0d1117; /* Texto oscuro sobre cian */
+        }
+
+        .btn-upload:hover {
+            background-color: #00acc1;
+            box-shadow: 0 0 10px #00bcd4;
+        }
+    </style>
+</head>
+
+<body>
+<!-- ⚠️ NOTA IMPORTANTE: La estructura del Header y Footer está en tu layout base. -->
+
+<main class="page-container">
+
+    <!-- Sección HERO -->
+    <section style="text-align: center; padding: 4rem 0;">
+        <h1 class="hero-title">
+            MetaMapa: La Realidad, Verificada por la Comunidad.
+        </h1>
+        <p style="font-size: 1.2rem; color: #9aa5b1; margin-top: 1rem;">
+            Donde cada evento reportado se transforma en conocimiento útil y preciso.
+        </p>
+    </section>
+
+    <!-- Contenido Central: ¿Qué es y Propósito? -->
+    <section class="futuristic-card">
+        <h2 style="font-size: 2rem; color: #00bcd4; border-bottom: 1px solid #30363d; padding-bottom: 0.5rem; margin-top: 0;">
+            ¿Qué es MetaMapa y de qué te sirve?
+        </h2>
+
+        <p style="color: #c9d1d9; line-height: 1.8;">
+            MetaMapa es una plataforma de **colaboración y estructuración de hechos**. Recibimos información sobre sucesos (eventos, reportes) desde múltiples vías: archivos CSV que subes tú, APIs de otros sistemas, y contribuciones manuales de la comunidad.
+            <br><br>
+            Nuestro propósito es **centralizar y limpiar** estos datos. Te servimos para dejar de depender de fuentes aisladas, ofreciéndote un mapa único y confiable de la realidad en tiempo real.
+        </p>
+
+        <div class="highlight-grid">
+            <div class="highlight-item">
+                <h3>🔍 El Mapa se Unifica</h3>
+                <p style="color: #9aa5b1; font-size: 0.95rem;">
+                    Toda la información dispersa se consolida en un único historial de hechos verificable.
+                </p>
+            </div>
+            <div class="highlight-item">
+                <h3>🛡️ Datos de Alta Confianza</h3>
+                <p style="color: #9aa5b1; font-size: 0.95rem;">
+                    Un grupo de **administradores** se encarga de validar los reportes y asignarle un nivel de credibilidad.
+                </p>
+            </div>
+            <div class="highlight-item">
+                <h3>📚 La Información Organizada</h3>
+                <p style="color: #9aa5b1; font-size: 0.95rem;">
+                    Agrupamos hechos por tema, ubicación o tiempo en "Colecciones", listas para tu análisis.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Uso Esperado -->
+    <section class="futuristic-card">
+        <h2 style="font-size: 2rem; color: #00bcd4; border-bottom: 1px solid #30363d; padding-bottom: 0.5rem; margin-top: 0;">
+            Cómo Usar la Plataforma (Tu Contribución)
+        </h2>
+
+        <p style="color: #c9d1d9; line-height: 1.8;">
+            Vivimos de las contribuciones. Esperamos que uses MetaMapa de dos maneras principales:
+        </p>
+
+        <ul style="color: #c9d1d9; margin-left: 1.5rem; line-height: 1.8;">
+            <li>**Informar Sucesos Relevantes:** Si conoces un evento (histórico o reciente), esperamos que lo reportes o que subas la data correspondiente.</li>
+            <li>**Validar el Mapa:** Una vez subido un hecho, otros usuarios pueden solicitar su modificación o eliminación, manteniendo la información fresca y veraz.</li>
+            <li>**Analizar Colecciones:** Utiliza las Colecciones ya curadas por los administradores para obtener análisis limpios y consistentes.</li>
+        </ul>
+
+        <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #30363d;">
+
+        <div style="text-align: center;">
+            <p style="font-size: 1.25rem; color: #e6edf3; margin-bottom: 1.5rem;">
+                ¿Tienes información valiosa que agregar a MetaMapa?
+            </p>
+            <!-- Botón de Acción -->
+            <a th:href="@{/admin/hechos/importar}" class="btn-action btn-upload">
+                Subir Nuevo Hecho (CSV)
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<!-- ⚠️ NOTA IMPORTANTE: El Footer dinámico debe estar en tu layout base. -->
+
+</body>
+</html>

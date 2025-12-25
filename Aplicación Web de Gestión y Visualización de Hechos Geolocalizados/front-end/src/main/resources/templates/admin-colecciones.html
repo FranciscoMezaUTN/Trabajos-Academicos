@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colecciones - MetaMapa Admin</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="admin-layout">
+    <aside class="sidebar">
+        <a th:href="@{/}" class="logo">MetaMapa Admin</a>
+        <nav class="sidebar__nav">
+            <a th:href="@{/admin/dashboard}" class="sidebar__link">Dashboard</a>
+            <a th:href="@{/admin/colecciones}" class="sidebar__link sidebar__link--active">Colecciones</a>
+            <a th:href="@{/admin/revisiones}" class="sidebar__link">Revisiones</a>
+            <a th:href="@{/admin/estadisticas}" class="sidebar__link">Estadísticas </a>
+        </nav>
+        <a th:href="@{/auth/logout}" class="btn btn--secondary sidebar__logout">Cerrar Sesión</a>
+    </aside>
+
+    <main class="main-content">
+
+        <div th:if="${mensaje}" class="api-success-alert mb-2" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="api-error-alert mb-2" th:text="${error}"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+
+            <h1 class="page-title" style="margin-bottom: 0;">Gestión de Colecciones</h1>
+
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/colecciones/crear}" class="btn btn--primary">
+                    Crear Colección
+                </a>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>ID Colección</th>
+                    <th>Colección</th>
+                    <th>Descripción</th>
+                    <th>Acción</th> </tr>
+                </thead>
+                <tbody>
+                <tr th:each="coleccion : ${colecciones}">
+                    <td th:text="${coleccion.id}">1</td>
+                    <td th:text="${coleccion.titulo}" style="font-weight: 500;">Nombre</td>
+                    <td class="cell-wrap" th:text="${coleccion.descripcion}">Descripción...</td>
+                    <td>
+                        <a th:href="@{/admin/colecciones/{id}/detalle(id=${coleccion.id})}"
+                           class="btn btn--small btn--primary">
+                            Gestionar
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(colecciones)}">
+                    <td colspan="4" style="text-align: center; color: #64748b; font-style: italic;">
+                        No hay colecciones creadas.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>
