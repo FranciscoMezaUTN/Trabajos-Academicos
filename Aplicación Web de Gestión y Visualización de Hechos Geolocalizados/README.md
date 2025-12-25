@@ -1,16 +1,16 @@
 # Aplicación Web de Gestión y Visualización de Hechos Geolocalizados
 
-Este proyecto fue desarrollado como parte de un trabajo práctico en la materia Sistemas Operativos. Se trata de la simulación de un sistema distribuido que implementa conceptos fundamentales de sistemas operativos, incluyendo planificación de procesos, manejo de memoria y sistemas de archivos.
+Este proyecto fue desarrollado como parte de un trabajo práctico para la materia Diseño de Sistemas de Información. Se trata de una aplicación web full-stack orientada a microservicios, diseñada para la recolección, publicación y visualización interactiva de hechos geolocalizados en tiempo real.
 
 ## Descripción
 
-El objetivo principal fue diseñar e implementar un sistema que permita:
+El objetivo principal fue diseñar e implementar un sistema distribuido que permita:
 
-- Planificar procesos utilizando algoritmos como FIFO, Round Robin (RR) y Virtual Round Robin (VRR).
-- Administrar recursos compartidos y manejar solicitudes de entrada/salida.
-- Implementar una memoria virtual basada en paginación, incluyendo la traducción de direcciones y una TLB.
-- Gestionar un sistema de archivos simple (DialFS) con funcionalidades como creación, eliminación y truncamiento de archivos.
-- Desplegar y coordinar múltiples módulos en un entorno distribuido mediante comunicación en red.
+- Publicar y gestionar hechos/eventos vinculados a coordenadas geográficas específicas.
+- Visualizar datos en un mapa interactivo con filtros dinámicos por categorías, fechas y fuentes.
+- Implementar una arquitectura orientada a microservicios para separar la lógica de agregación de datos de la interfaz de usuario.
+- Consumir APIs externas y servicios internos mediante comunicación asíncrona y reactiva.
+- Garantizar la integridad y persistencia de grandes volúmenes de datos geográficos.
 
 ## Módulos Principales
 
@@ -23,10 +23,10 @@ El objetivo principal fue diseñar e implementar un sistema que permita:
 
 ## Habilidades Técnicas 
 
-- **Programación en C**: Diseño modular y eficiente, uso de estructuras de datos y manejo de memoria dinámica.
-- **Sistemas Distribuidos**: Comunicación entre procesos mediante sockets y sincronización multihilo.
-- **Conceptos de Sistemas Operativos**: Planificación de procesos, administración de memoria y manejo de recursos.
-- **Depuración y Testing**: Uso de logs detallados y pruebas en entornos distribuidos para asegurar el correcto funcionamiento.
-- **Herramientas de Desarrollo**: Uso de Makefiles, configuración mediante archivos y control de versiones con Git.
-- **Entornos virtualizados**: Configuración y uso de una máquina virtual para desarrollar y probar en un sistema operativo Linux, asegurando un entorno de trabajo aislado y reproducible.
+- **Back-end Development**: Implementación de servicios con Java y Spring Boot, creación de APIs REST y uso de WebClient para comunicación entre servicios.
+- **Persistencia de Datos**: Gestión de bases de datos con MySQL, modelado de entidades complejas y optimización de consultas gracias a Hibernate. 
+- **Front-end Development**: Creación de interfaces dinámicas utilizando JavaScript, HTML, CSS, y Thymeleaf con integración de librerías de mapas y manejo de formularios estáticos y asíncronos.
+- **Arquitectura y Calidad**: Diseño de sistemas basados en Microservicios y aplicación de estándares de calidad ISO 25000 para asegurar un código mantenible y eficiente.
+- **Cloud & DevOps**: Colaboración en el despliegue de la infraestructura utilizando servicios de nube de AWS y control de versiones con GitHub.
+- **Herramientas de Desarrollo**: Gestión de dependencias con Maven, configuración de entornos distribuidos y depuración técnica mediante logs de servidor.
 
