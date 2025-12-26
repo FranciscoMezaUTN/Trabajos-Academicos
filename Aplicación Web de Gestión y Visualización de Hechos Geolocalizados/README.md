@@ -14,12 +14,12 @@ El objetivo principal fue diseñar e implementar un sistema distribuido que perm
 
 ## Módulos Principales
 
-- **Fuente Estática**: Encargado de la planificación y coordinación entre CPU, memoria e interfaces de I/O.
-- **Fuente Dinámica**: Simula el ciclo de instrucción de una CPU, incluyendo Fetch, Decode, Execute y Check Interrupt.
-- **Fuente Proxy**: Implementa un esquema de paginación y maneja tablas de páginas y espacio de usuario.
-- **Servicio Agregador**: Gestiona interacciones con dispositivos simulados, como teclado, pantalla y un sistema de archivos básico.
-- **Servicio de Estadísticas**: Gestiona interacciones con dispositivos simulados, como teclado, pantalla y un sistema de archivos básico.
-- **Gestión de Usuarios**: Gestiona interacciones con dispositivos simulados, como teclado, pantalla y un sistema de archivos básico.
+- **Fuente Estática**: Encargada de la extracción y procesamiento de datos desde orígenes persistentes y locales (como archivos CSV o bases de datos internas) para alimentar el sistema con información histórica o base.
+- **Fuente Dinámica**: Responsable de la obtención de información en tiempo real mediante aportes de los usuarios, permitiendo la actualización constante de los hechos geolocalizados.
+- **Fuente Proxy**: Actúa como un componente intermediario que estandariza la comunicación con servicios de terceros, gestionando la transformación de datos externos a un formato compatible con el sistema interno.
+- **Servicio Agregador**: El núcleo del back-end; centraliza la información proveniente de todas las fuentes, aplica filtros de lógica de negocio y expone una API unificada para la visualización de los hechos.
+- **Servicio de Estadísticas**:  Módulo especializado en el procesamiento analítico de los datos recolectados para generar métricas, tendencias y reportes sobre la actividad en el sistema.
+- **Gestión de Usuarios**: Administra la seguridad del sistema, manejando la autenticación, autorización y perfiles de usuario, asegurando que el acceso a las funciones de administración esté debidamente protegido.
 
 ## Habilidades Técnicas 
 
